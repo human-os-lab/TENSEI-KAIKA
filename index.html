@@ -4,530 +4,469 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>天性鑑定 | 天性開花学</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Cinzel+Decorative:wght@400;700&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400;700&family=Cinzel:wght@400;600;700&family=Shippori+Mincho:wght@400;500;700;800&family=Zen+Old+Mincho:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --deep-navy: #0a0a1a;
-    --royal-purple: #1a0a3a;
-    --violet: #2d1b69;
-    --gold: #c9a84c;
-    --gold-light: #f0d080;
-    --gold-bright: #ffd700;
-    --white: #f5f0e8;
-    --white-dim: rgba(245,240,232,0.7);
-    --glow: rgba(201,168,76,0.3);
-  }
+:root {
+  --navy: #05050f;
+  --deep: #0a0820;
+  --purple: #150d35;
+  --gold: #c8a45a;
+  --gold-light: #e8c878;
+  --gold-dim: rgba(200,164,90,0.4);
+  --white: #f0ebe0;
+  --white-dim: rgba(240,235,224,0.6);
+}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--navy);
+  color: var(--white);
+  font-family: 'Noto Serif JP', serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-  body {
-    background: var(--deep-navy);
-    color: var(--white);
-    font-family: 'Noto Serif JP', serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+.stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.star {
+  position: absolute; width: 1px; height: 1px;
+  background: white; border-radius: 50%;
+  animation: twinkle linear infinite;
+}
+@keyframes twinkle {
+  0%,100% { opacity: 0.1; } 50% { opacity: 0.9; }
+}
 
-  /* 背景の星 */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse at 20% 20%, rgba(45,27,105,0.6) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 80%, rgba(26,10,58,0.8) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 50%, rgba(10,10,26,1) 0%, transparent 100%);
-    z-index: 0;
-  }
+.orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; }
+.orb-1 { width: 400px; height: 400px; background: rgba(80,40,140,0.2); top: -100px; left: -100px; }
+.orb-2 { width: 300px; height: 300px; background: rgba(180,130,60,0.08); bottom: 100px; right: -50px; }
 
-  /* 浮遊する数字 */
-  .floating-numbers {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-  }
+.page { display: none; position: relative; z-index: 1; }
+.page.active { display: block; }
 
-  .float-num {
-    position: absolute;
-    font-family: 'Cinzel Decorative', serif;
-    color: rgba(201,168,76,0.08);
-    font-size: clamp(1rem, 3vw, 2.5rem);
-    animation: floatUp linear infinite;
-    user-select: none;
-  }
+/* ===== TOP ===== */
+#page-top {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 60px 24px;
+}
 
-  @keyframes floatUp {
-    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 0.5; }
-    100% { transform: translateY(-100px) rotate(20deg); opacity: 0; }
-  }
+.mandala {
+  width: 90px; height: 90px;
+  margin: 0 auto 20px;
+  animation: rotateSlow 40s linear infinite;
+}
+@keyframes rotateSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-  /* メインコンテナ */
-  .container {
-    position: relative;
-    z-index: 1;
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 0 20px 80px;
-  }
+.brand-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem; letter-spacing: 0.5em;
+  color: var(--gold); opacity: 0.65;
+  text-align: center; margin-bottom: 16px;
+}
 
-  /* ヘッダー */
-  header {
-    text-align: center;
-    padding: 60px 0 40px;
-    position: relative;
-  }
+.brand-title {
+  font-family: 'Shippori Mincho', serif;
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 700; text-align: center;
+  letter-spacing: 0.25em; line-height: 1.6;
+  background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 70%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
 
-  .mandala {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 24px;
-    position: relative;
-    animation: spin 30s linear infinite;
-  }
+.brand-catch {
+  font-size: 0.8rem; color: var(--white-dim);
+  text-align: center; letter-spacing: 0.15em;
+  line-height: 2; margin-top: 12px;
+}
 
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
+.divider-line {
+  width: 1px; height: 48px;
+  background: linear-gradient(180deg, transparent, var(--gold-dim), transparent);
+  margin: 28px auto;
+}
 
-  .mandala svg {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 0 12px var(--gold));
-  }
+.input-card {
+  width: 100%; max-width: 460px;
+  background: linear-gradient(135deg, rgba(21,13,53,0.8), rgba(10,8,32,0.9));
+  border: 1px solid rgba(200,164,90,0.18);
+  padding: 36px 28px; position: relative;
+}
 
-  h1 {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: clamp(1.6rem, 5vw, 2.4rem);
-    letter-spacing: 0.15em;
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-bright) 50%, var(--gold) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: none;
-    margin-bottom: 8px;
-  }
+.field { margin-bottom: 22px; }
+.field-label {
+  display: block; font-size: 0.6rem;
+  letter-spacing: 0.4em; color: var(--gold);
+  opacity: 0.75; margin-bottom: 10px;
+  font-family: 'Cinzel', serif;
+}
+.field-note {
+  font-size: 0.65rem; color: var(--white-dim);
+  letter-spacing: 0.05em; margin-top: 6px;
+  opacity: 0.7;
+}
 
-  .subtitle {
-    font-family: 'Noto Serif JP', serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.4em;
-    color: var(--gold);
-    opacity: 0.7;
-    font-weight: 300;
-  }
+.field-input {
+  width: 100%; background: rgba(5,5,15,0.8);
+  border: none; border-bottom: 1px solid rgba(200,164,90,0.2);
+  color: var(--white); padding: 12px 4px;
+  font-family: 'Noto Serif JP', serif; font-size: 0.9rem;
+  outline: none; transition: border-color 0.3s;
+}
+.field-input:focus { border-bottom-color: var(--gold); }
+.field-input::placeholder { color: rgba(240,235,224,0.2); }
+.field-input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.6) sepia(1) saturate(2); opacity: 0.5; cursor: pointer;
+}
 
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin: 32px 0;
-  }
+textarea.field-input {
+  resize: none; height: 80px;
+  border: 1px solid rgba(200,164,90,0.15);
+  padding: 10px 12px;
+}
 
-  .divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  }
+.btn-main {
+  width: 100%; padding: 17px;
+  background: transparent; border: 1px solid var(--gold);
+  color: var(--gold-light);
+  font-family: 'Cinzel', serif; font-size: 0.75rem;
+  letter-spacing: 0.4em; cursor: pointer;
+  position: relative; overflow: hidden; transition: all 0.4s;
+  margin-top: 8px;
+}
+.btn-main::before {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(200,164,90,0.08);
+  transform: translateX(-100%); transition: transform 0.4s;
+}
+.btn-main:hover::before { transform: translateX(0); }
+.btn-main:hover { box-shadow: 0 0 20px rgba(200,164,90,0.15); }
+.btn-main span { position: relative; z-index: 1; }
 
-  .divider span {
-    color: var(--gold);
-    font-size: 1rem;
-  }
+.error { color: #e06060; font-size: 0.7rem; text-align: center; margin-top: 12px; }
 
-  /* フォームカード */
-  .card {
-    background: linear-gradient(135deg,
-      rgba(45,27,105,0.4) 0%,
-      rgba(26,10,58,0.6) 100%);
-    border: 1px solid rgba(201,168,76,0.2);
-    border-radius: 2px;
-    padding: 40px;
-    backdrop-filter: blur(20px);
-    box-shadow:
-      0 0 40px rgba(0,0,0,0.5),
-      inset 0 1px 0 rgba(201,168,76,0.1);
-    position: relative;
-  }
+/* ===== LOADING ===== */
+.loading-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(5,5,15,0.95); z-index: 100;
+  align-items: center; justify-content: center;
+  flex-direction: column; gap: 20px;
+}
+.loading-overlay.show { display: flex; }
+.loading-star { font-size: 2rem; animation: spinStar 2s ease-in-out infinite; }
+@keyframes spinStar {
+  0% { transform: rotate(0deg) scale(0.8); opacity: 0.3; }
+  50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
+  100% { transform: rotate(360deg) scale(0.8); opacity: 0.3; }
+}
+.loading-text {
+  font-family: 'Cinzel', serif; font-size: 0.65rem;
+  letter-spacing: 0.5em; color: var(--gold); opacity: 0.7;
+}
 
-  .card::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: 2px;
-    background: linear-gradient(135deg, rgba(201,168,76,0.3), transparent, rgba(201,168,76,0.1));
-    z-index: -1;
-  }
+/* ===== RESULT ===== */
+#page-result { min-height: 100vh; padding-bottom: 80px; }
 
-  /* コーナー装飾 */
-  .corner {
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    border-color: var(--gold);
-    border-style: solid;
-    opacity: 0.6;
-  }
-  .corner.tl { top: 8px; left: 8px; border-width: 1px 0 0 1px; }
-  .corner.tr { top: 8px; right: 8px; border-width: 1px 1px 0 0; }
-  .corner.bl { bottom: 8px; left: 8px; border-width: 0 0 1px 1px; }
-  .corner.br { bottom: 8px; right: 8px; border-width: 0 1px 1px 0; }
+.result-hero {
+  padding: 80px 24px 48px; text-align: center;
+  border-bottom: 1px solid rgba(200,164,90,0.1);
+}
+.result-label {
+  font-family: 'Cinzel', serif; font-size: 0.55rem;
+  letter-spacing: 0.6em; color: var(--gold); opacity: 0.55; margin-bottom: 20px;
+}
+.result-person {
+  font-size: 0.75rem; letter-spacing: 0.3em;
+  color: var(--white-dim); margin-bottom: 14px;
+}
+.result-character {
+  font-family: 'Shippori Mincho', serif;
+  font-size: clamp(2.8rem, 9vw, 5rem); font-weight: 700;
+  background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 70%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  letter-spacing: 0.15em; line-height: 1.2;
+  animation: glowPulse 3s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%,100% { filter: drop-shadow(0 0 15px rgba(200,164,90,0.2)); }
+  50% { filter: drop-shadow(0 0 35px rgba(200,164,90,0.5)); }
+}
+.result-gold-line {
+  width: 60px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 28px auto;
+}
+.result-birthday { font-size: 0.65rem; color: var(--white-dim); letter-spacing: 0.2em; }
 
-  .form-section-label {
-    font-size: 0.65rem;
-    letter-spacing: 0.35em;
-    color: var(--gold);
-    opacity: 0.6;
-    margin-bottom: 8px;
-    font-weight: 300;
-  }
+.result-body { max-width: 520px; margin: 0 auto; padding: 0 20px; }
 
-  .input-group {
-    margin-bottom: 28px;
-  }
+.result-section {
+  margin-bottom: 32px; padding: 28px 24px;
+  background: linear-gradient(135deg, rgba(21,13,53,0.5), rgba(10,8,32,0.7));
+  border: 1px solid rgba(200,164,90,0.1);
+  animation: fadeUp 0.7s ease both;
+}
+.result-section:nth-child(2) { animation-delay: 0.1s; }
+.result-section:nth-child(3) { animation-delay: 0.2s; }
+.result-section:nth-child(4) { animation-delay: 0.3s; }
 
-  label {
-    display: block;
-    font-size: 0.7rem;
-    letter-spacing: 0.3em;
-    color: var(--gold);
-    opacity: 0.8;
-    margin-bottom: 10px;
-    font-weight: 300;
-  }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-  input[type="text"],
-  input[type="date"],
-  textarea {
-    width: 100%;
-    background: rgba(10,10,26,0.6);
-    border: 1px solid rgba(201,168,76,0.25);
-    color: var(--white);
-    padding: 14px 18px;
-    font-family: 'Noto Serif JP', serif;
-    font-size: 0.9rem;
-    outline: none;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    border-radius: 1px;
-  }
+.section-tag {
+  font-family: 'Cinzel', serif; font-size: 0.5rem;
+  letter-spacing: 0.5em; color: var(--gold); opacity: 0.55; margin-bottom: 10px;
+}
+.section-title {
+  font-family: 'Shippori Mincho', serif; font-size: 1rem;
+  font-weight: 700; color: var(--gold-light); margin-bottom: 12px; letter-spacing: 0.1em;
+}
+.section-text {
+  font-size: 0.82rem; line-height: 2.2;
+  color: var(--white-dim); letter-spacing: 0.04em;
+}
 
-  input:focus, textarea:focus {
-    border-color: rgba(201,168,76,0.6);
-    box-shadow: 0 0 20px rgba(201,168,76,0.1);
-  }
+/* 追加質問欄 */
+.more-question {
+  margin-top: 8px; padding: 28px 24px;
+  background: rgba(21,13,53,0.4);
+  border: 1px solid rgba(200,164,90,0.1);
+  animation: fadeUp 0.7s ease 0.4s both;
+}
+.more-question-label {
+  font-family: 'Cinzel', serif; font-size: 0.55rem;
+  letter-spacing: 0.4em; color: var(--gold); opacity: 0.6; margin-bottom: 12px;
+}
+.more-question-title {
+  font-size: 0.82rem; color: var(--white-dim);
+  letter-spacing: 0.1em; line-height: 1.8; margin-bottom: 16px;
+}
+textarea.more-input {
+  width: 100%; background: rgba(5,5,15,0.6);
+  border: 1px solid rgba(200,164,90,0.15);
+  color: var(--white); padding: 12px;
+  font-family: 'Noto Serif JP', serif; font-size: 0.82rem;
+  outline: none; resize: none; height: 80px;
+  transition: border-color 0.3s;
+}
+textarea.more-input:focus { border-color: rgba(200,164,90,0.4); }
+textarea.more-input::placeholder { color: rgba(240,235,224,0.2); }
 
-  input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(0.7) sepia(1) saturate(2) hue-rotate(5deg);
-    opacity: 0.6;
-  }
+.btn-send {
+  width: 100%; padding: 14px; margin-top: 12px;
+  background: transparent; border: 1px solid rgba(200,164,90,0.4);
+  color: var(--gold); font-family: 'Cinzel', serif;
+  font-size: 0.65rem; letter-spacing: 0.3em; cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-send:hover { border-color: var(--gold); background: rgba(200,164,90,0.05); }
+.send-done { font-size: 0.7rem; color: var(--gold); text-align: center; margin-top: 8px; opacity: 0.8; display: none; }
 
-  textarea {
-    resize: none;
-    height: 80px;
-  }
-
-  /* ボタン */
-  .btn-kantei {
-    width: 100%;
-    padding: 18px;
-    background: transparent;
-    border: 1px solid var(--gold);
-    color: var(--gold-light);
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 0.85rem;
-    letter-spacing: 0.3em;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.4s;
-    margin-top: 8px;
-  }
-
-  .btn-kantei::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, var(--gold), var(--gold-bright));
-    opacity: 0;
-    transition: opacity 0.4s;
-  }
-
-  .btn-kantei:hover::before { opacity: 0.15; }
-  .btn-kantei:hover {
-    box-shadow: 0 0 30px rgba(201,168,76,0.3), inset 0 0 30px rgba(201,168,76,0.05);
-    letter-spacing: 0.4em;
-  }
-
-  .btn-kantei span { position: relative; z-index: 1; }
-
-  /* 結果表示 */
-  .result-area {
-    display: none;
-    margin-top: 48px;
-    text-align: center;
-    animation: revealResult 1s ease forwards;
-  }
-
-  @keyframes revealResult {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .result-name {
-    font-size: 0.7rem;
-    letter-spacing: 0.4em;
-    color: var(--gold);
-    opacity: 0.6;
-    margin-bottom: 16px;
-  }
-
-  .result-character {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: clamp(2.5rem, 8vw, 4rem);
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-bright) 50%, var(--gold) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 0.1em;
-    line-height: 1.2;
-    text-shadow: none;
-    filter: drop-shadow(0 0 20px rgba(201,168,76,0.4));
-    margin: 8px 0 24px;
-  }
-
-  .result-glow {
-    width: 120px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    margin: 0 auto 24px;
-  }
-
-  .result-person {
-    font-size: 0.75rem;
-    color: var(--white-dim);
-    letter-spacing: 0.2em;
-  }
-
-  /* タブ */
-  .tabs {
-    display: flex;
-    gap: 0;
-    margin-bottom: 32px;
-    border-bottom: 1px solid rgba(201,168,76,0.2);
-  }
-
-  .tab-btn {
-    padding: 12px 28px;
-    background: none;
-    border: none;
-    color: var(--white-dim);
-    font-family: 'Noto Serif JP', serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.25em;
-    cursor: pointer;
-    position: relative;
-    transition: color 0.3s;
-  }
-
-  .tab-btn.active {
-    color: var(--gold);
-  }
-
-  .tab-btn.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: var(--gold);
-  }
-
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-
-  /* 履歴 */
-  .pw-input-wrap { margin-bottom: 24px; }
-
-  .history-item {
-    border: 1px solid rgba(201,168,76,0.15);
-    padding: 20px 24px;
-    margin-bottom: 12px;
-    background: rgba(45,27,105,0.2);
-    transition: border-color 0.3s;
-  }
-
-  .history-item:hover { border-color: rgba(201,168,76,0.35); }
-
-  .history-meta {
-    font-size: 0.65rem;
-    color: var(--white-dim);
-    letter-spacing: 0.2em;
-    margin-bottom: 8px;
-  }
-
-  .history-result {
-    font-family: 'Cinzel Decorative', serif;
-    color: var(--gold);
-    font-size: 1rem;
-    letter-spacing: 0.1em;
-  }
-
-  /* ローディング */
-  .loading {
-    display: none;
-    text-align: center;
-    padding: 40px;
-  }
-
-  .star-loader {
-    font-size: 2rem;
-    animation: pulse 1s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 0.3; transform: scale(0.9); }
-    50% { opacity: 1; transform: scale(1.1); }
-  }
-
-  .error-msg {
-    color: #ff6b6b;
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-    text-align: center;
-    margin-top: 16px;
-  }
-
-  /* スクロールバー */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: var(--deep-navy); }
-  ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 2px; }
-
-  @media (max-width: 480px) {
-    .card { padding: 28px 20px; }
-    .tab-btn { padding: 12px 16px; }
-  }
+.btn-back {
+  display: block; width: fit-content; margin: 40px auto 0;
+  padding: 13px 36px; background: transparent;
+  border: 1px solid rgba(200,164,90,0.35);
+  color: var(--gold); font-family: 'Cinzel', serif;
+  font-size: 0.65rem; letter-spacing: 0.3em; cursor: pointer; transition: all 0.3s;
+}
+.btn-back:hover { border-color: var(--gold); background: rgba(200,164,90,0.05); }
 </style>
 </head>
 <body>
 
-<!-- 浮遊する数字 -->
-<div class="floating-numbers" id="floatingNums"></div>
+<div class="stars" id="stars"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
 
-<div class="container">
+<div class="loading-overlay" id="loading">
+  <div class="loading-star">✦</div>
+  <div class="loading-text">古代の叡智とつながっています...</div>
+</div>
 
-  <!-- ヘッダー -->
-  <header>
-    <div class="mandala">
-      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50" cy="50" r="48" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
-        <circle cx="50" cy="50" r="38" stroke="#c9a84c" stroke-width="0.5" opacity="0.5"/>
-        <circle cx="50" cy="50" r="28" stroke="#c9a84c" stroke-width="0.5" opacity="0.6"/>
-        <circle cx="50" cy="50" r="18" stroke="#c9a84c" stroke-width="0.5" opacity="0.8"/>
-        <g stroke="#c9a84c" stroke-width="0.5" opacity="0.6">
-          <line x1="50" y1="2" x2="50" y2="98"/>
-          <line x1="2" y1="50" x2="98" y2="50"/>
-          <line x1="15" y1="15" x2="85" y2="85"/>
-          <line x1="85" y1="15" x2="15" y2="85"/>
-        </g>
-        <g fill="#c9a84c" opacity="0.8">
-          <polygon points="50,5 52,10 50,9 48,10" />
-          <polygon points="50,95 52,90 50,91 48,90" />
-          <polygon points="5,50 10,52 9,50 10,48" />
-          <polygon points="95,50 90,52 91,50 90,48" />
-        </g>
-        <circle cx="50" cy="50" r="4" fill="#c9a84c" opacity="0.9"/>
-        <circle cx="50" cy="50" r="2" fill="#ffd700"/>
-      </svg>
+<!-- TOP -->
+<div class="page active" id="page-top">
+  <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;">
+
+    <div style="margin-bottom:40px;text-align:center;">
+      <div class="mandala">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="47" stroke="#c8a45a" stroke-width="0.4" opacity="0.3"/>
+          <circle cx="50" cy="50" r="37" stroke="#c8a45a" stroke-width="0.4" opacity="0.4"/>
+          <circle cx="50" cy="50" r="27" stroke="#c8a45a" stroke-width="0.4" opacity="0.55"/>
+          <circle cx="50" cy="50" r="17" stroke="#c8a45a" stroke-width="0.5" opacity="0.7"/>
+          <circle cx="50" cy="50" r="7" stroke="#c8a45a" stroke-width="0.5" opacity="0.9"/>
+          <g stroke="#c8a45a" stroke-width="0.3" opacity="0.35">
+            <line x1="50" y1="3" x2="50" y2="97"/>
+            <line x1="3" y1="50" x2="97" y2="50"/>
+            <line x1="17" y1="17" x2="83" y2="83"/>
+            <line x1="83" y1="17" x2="17" y2="83"/>
+            <line x1="5" y1="28" x2="95" y2="72"/>
+            <line x1="5" y1="72" x2="95" y2="28"/>
+            <line x1="28" y1="5" x2="72" y2="95"/>
+            <line x1="72" y1="5" x2="28" y2="95"/>
+          </g>
+          <circle cx="50" cy="50" r="2.5" fill="#c8a45a" opacity="0.9"/>
+          <circle cx="50" cy="50" r="1" fill="#e8c878"/>
+        </svg>
+      </div>
+      <div class="brand-sub">✦ Ancient JP Wisdom ✦</div>
+      <div style="text-align:center;line-height:1.25;margin-bottom:4px;">
+        <span style="font-family:'Zen Old Mincho',serif;font-size:clamp(1.6rem,5.5vw,2.6rem);font-weight:700;color:#f0ebe0;letter-spacing:0.25em;display:block;margin-bottom:2px;">あなたの</span>
+        <span style="font-family:'Zen Old Mincho',serif;font-size:clamp(2rem,6.5vw,3.4rem);font-weight:900;letter-spacing:0.2em;display:block;margin-bottom:2px;background:linear-gradient(180deg,#e8c878 0%,#c8a45a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">魂のテーマ</span>
+        <span style="font-family:'Zen Old Mincho',serif;font-size:clamp(1.6rem,5.5vw,2.6rem);font-weight:700;color:#f0ebe0;letter-spacing:0.25em;display:block;">を解き明かす</span>
+      </div>
+      <div class="brand-catch">天性開花学が導く、あなただけの天性</div>
     </div>
-    <h1>天性鑑定</h1>
-    <p class="subtitle">✦ 天性開花学 ✦</p>
-  </header>
 
-  <!-- タブ -->
+    <div class="divider-line"></div>
 
-
-  <!-- 鑑定タブ -->
-  <div id="tab-kantei">
-    <div class="card">
-      <div class="corner tl"></div>
-      <div class="corner tr"></div>
-      <div class="corner bl"></div>
-      <div class="corner br"></div>
-
-      <div class="input-group">
-        <label>お 名 前</label>
-        <input type="text" id="name" placeholder="山田 花子">
+    <div class="input-card">
+      <div class="field">
+        <label class="field-label">NAME / NICKNAME</label>
+        <input type="text" class="field-input" id="name" placeholder="お名前またはニックネーム">
       </div>
-
-      <div class="input-group">
-        <label>生 年 月 日</label>
-        <input type="date" id="birthday" value="1980-01-01" min="1924-01-01" max="2020-12-31">
+      <div class="field">
+        <label class="field-label">DATE OF BIRTH</label>
+        <input type="date" class="field-input" id="birthday" value="1980-01-01" min="1924-01-01" max="2020-12-31">
       </div>
-
-      <div class="input-group">
-        <label>コ メ ン ト</label>
-        <textarea id="comment" placeholder="相談内容、気になることなど"></textarea>
+      <div class="field">
+        <label class="field-label">MESSAGE</label>
+        <textarea class="field-input" id="comment" placeholder="えっちゃんへのメッセージ・相談したいことなど"></textarea>
+        <div class="field-note">※このメッセージはえっちゃんに届きます</div>
       </div>
-
-      <button class="btn-kantei" onclick="doKantei()">
-        <span>✦ 天 性 を 解 き 明 か す ✦</span>
+      <button class="btn-main" onclick="doKantei()">
+        <span>✦ 天 性 診 断 を 始 め る ✦</span>
       </button>
-
-      <div id="error-msg" class="error-msg"></div>
+      <div class="error" id="error"></div>
     </div>
 
-    <!-- ローディング -->
-    <div class="loading" id="loading">
-      <div class="star-loader">✦</div>
-    </div>
+  </div>
+</div>
 
-    <!-- 結果 -->
-    <div class="result-area" id="result-area">
-      <div class="divider"><span>✦</span></div>
-      <p class="result-name" id="result-person-label"></p>
-      <div class="result-character" id="result-character"></div>
-      <div class="result-glow"></div>
-      <p class="result-person" id="result-birthday-label"></p>
+<!-- RESULT -->
+<div class="page" id="page-result">
+  <div class="result-hero">
+    <div class="result-label">✦ YOUR TENSEI READING ✦</div>
+    <div class="result-person" id="result-person"></div>
+    <div class="result-character" id="result-character"></div>
+    <div class="result-gold-line"></div>
+    <div class="result-birthday" id="result-birthday"></div>
+  </div>
+
+  <div class="result-body">
+    <div id="result-sections"></div>
+
+    <!-- 追加質問 -->
+    <div class="more-question">
+      <div class="more-question-label">MORE</div>
+      <div class="more-question-title">さらに詳しい鑑定で知りたいことはありますか？</div>
+      <textarea class="more-input" id="more-input" placeholder="気になること、聞きたいことを自由に書いてください"></textarea>
+      <button class="btn-send" onclick="sendMore()">✦ 送 る ✦</button>
+      <div class="send-done" id="send-done">✦ えっちゃんに届きました ✦</div>
     </div>
   </div>
 
-
+  <button class="btn-back" onclick="goBack()">← 戻 る</button>
 </div>
 
 <script>
-// 浮遊する数字を生成
-const nums = '123456789';
-const floatContainer = document.getElementById('floatingNums');
-for(let i = 0; i < 25; i++){
-  const el = document.createElement('div');
-  el.className = 'float-num';
-  el.textContent = nums[Math.floor(Math.random()*nums.length)];
-  el.style.left = Math.random()*100 + 'vw';
-  el.style.animationDuration = (15 + Math.random()*25) + 's';
-  el.style.animationDelay = (-Math.random()*30) + 's';
-  el.style.fontSize = (0.8 + Math.random()*2.5) + 'rem';
-  floatContainer.appendChild(el);
+// 星生成
+const starsEl = document.getElementById('stars');
+for(let i = 0; i < 100; i++){
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.style.cssText = `left:${Math.random()*100}vw;top:${Math.random()*100}vh;animation-duration:${2+Math.random()*5}s;animation-delay:${-Math.random()*7}s;`;
+  const sz = 0.5+Math.random()*1.5;
+  s.style.width = sz+'px'; s.style.height = sz+'px';
+  starsEl.appendChild(s);
 }
 
-// 鑑定実行
+// ダミーDB
+const DB = {
+  'キング': { theme: '尊敬される存在', sections: [
+    { tag: 'NATURE', title: '天性の姿', text: 'あなたは生まれながらのリーダーです。人々の上に立ち、導くことに天性の才があります。その存在感と決断力は、周囲に安心と信頼を与えます。' },
+    { tag: 'STRENGTH', title: '強み', text: '揺るぎない意志と、物事の本質を見抜く直観力。一度決めたことをやり遂げる実行力と、高い理想を持ち続ける力があなたの武器です。' },
+    { tag: 'SHADOW', title: '課題', text: 'プライドの高さが孤立を生むことがあります。「正しい」にこだわりすぎず、時に柔軟さを持つことで、さらに大きな力を発揮できます。' }
+  ]},
+  'キングMIX': { theme: '尊敬×調和', sections: [
+    { tag: 'NATURE', title: '天性の姿', text: 'キングの強さと、深い調和の力を併せ持つ存在です。リーダーシップと思いやりが融合した、稀有な天性です。' },
+    { tag: 'STRENGTH', title: '強み', text: '人を引っ張りながらも、相手の気持ちを深く理解できる力。強さと優しさが共存しているため、多くの人に慕われます。' },
+    { tag: 'SHADOW', title: '課題', text: '二つの天性を持つがゆえに、自分の方向性で迷うことがあります。どちらも本物のあなた。統合することが鍵です。' }
+  ]},
+  'マニア': { theme: '価値ある自分', sections: [
+    { tag: 'NATURE', title: '天性の姿', text: '静かに、しかし確実に価値を積み上げる存在。表舞台より、深く掘り下げることに喜びを見出す天性の探求者です。' },
+    { tag: 'STRENGTH', title: '強み', text: '細部まで気づく観察力と、ひとつのことを極める集中力。あなたの知識と洞察は、人が気づかない価値を生み出します。' },
+    { tag: 'SHADOW', title: '課題', text: '完璧を求めるあまり、行動が遅れることがあります。「十分良い」を認める勇気が、あなたをさらに前に進めます。' }
+  ]},
+  'マニアMIX': { theme: '価値×深化', sections: [
+    { tag: 'NATURE', title: '天性の姿', text: 'マニアの探求心と、もう一つの天性が融合した複合的な存在。深さと広さを同時に持つ、特別な在り方です。' },
+    { tag: 'STRENGTH', title: '強み', text: '複数の視点から物事を深く見られる力。それぞれの天性が互いを補い合い、唯一無二の洞察を生み出します。' },
+    { tag: 'SHADOW', title: '課題', text: '深く考えすぎて動けなくなることがあります。まず一歩踏み出すことが、二つの天性を活かす鍵です。' }
+  ]},
+  'ラバー': { theme: '愛を届ける', sections: [
+    { tag: 'NATURE', title: '天性の姿', text: '愛することが生きることの天性。与えることに喜びを感じ、その温かさで周囲の人々の心を癒す存在です。' },
+    { tag: 'STRENGTH', title: '強み', text: '誰とでも心を通わせられる共感力と、相手を包み込む包容力。その愛の深さは本物で、人の心を動かします。' },
+    { tag: 'SHADOW', title: '課題', text: '与えすぎて自分を見失うことがあります。まず自分を満たすことが、より豊かな愛を届ける土台になります。' }
+  ]},
+  'ラバーMIX': { theme: '愛×統合', sections: [
+    { tag: 'NATURE', title: '天性の姿', text: 'ラバーの愛と、もう一つの力が統合された存在。愛することと、自分の使命を両立できる稀有な天性です。' },
+    { tag: 'STRENGTH', title: '強み', text: '愛情深さと、もう一つの天性が生み出す独自の力。その掛け合わせが、あなただけの世界をつくります。' },
+    { tag: 'SHADOW', title: '課題', text: '二つの方向に力が分散することがあります。どちらも大切にしながら、統合のポイントを見つけることが成長の鍵です。' }
+  ]},
+  'エキスパート': { theme: 'バカにされない何者か', sections: [
+    { tag: 'NATURE', title: '天性の姿', text: '自分だけの世界観と美学を持つ、クールな頭脳派。自分の信じる道を、誰に何を言われようとも歩み続ける強さがあります。' },
+    { tag: 'STRENGTH', title: '強み', text: '0から1を生み出す創造力と、極める体力。あなたの専門性と独自の視点は、他の誰にも真似できない価値を持ちます。' },
+    { tag: 'SHADOW', title: '課題', text: '自分の正しさに固執しすぎると、可能性が狭まることがあります。他者の視点を取り入れることで、さらに深みが増します。' }
+  ]},
+  'エキスパートMIX': { theme: '専門×融合', sections: [
+    { tag: 'NATURE', title: '天性の姿', text: 'エキスパートの専門性と、もう一つの天性が融合した特別な存在。その組み合わせは、新しいジャンルそのものを作り出せます。' },
+    { tag: 'STRENGTH', title: '強み', text: '深い専門性と、別の天性の力が交わることで生まれる独自の世界観。あなたにしか作れない何かがあります。' },
+    { tag: 'SHADOW', title: '課題', text: '完璧主義が行動を妨げることがあります。まず世に出すことで、あなたの才能は磨かれていきます。' }
+  ]},
+  'スター': { theme: '人気者になりたい', sections: [
+    { tag: 'NATURE', title: '天性の姿', text: '生まれながらの人気者。明るさと自由な魂で周囲を照らし、その場を楽しくする天性の輝きを持っています。' },
+    { tag: 'STRENGTH', title: '強み', text: '誰とでもすぐに打ち解けられるフレンドリーさと、場の空気を変える明るさ。あなたがいるだけで、場が生き生きします。' },
+    { tag: 'SHADOW', title: '課題', text: '飽き性と、感情の波があることも。一つのことを丁寧に積み上げる経験が、スターとしての輝きをさらに増します。' }
+  ]},
+  'スターMIX': { theme: '輝き×深み', sections: [
+    { tag: 'NATURE', title: '天性の姿', text: 'スターの輝きと、もう一つの天性の深みが融合した存在。表の華やかさと、内なる深さを両方持つ特別な在り方です。' },
+    { tag: 'STRENGTH', title: '強み', text: '人を惹きつける明るさと、それを支える内なる力。表面だけでなく、深みのある輝きがあなたの魅力です。' },
+    { tag: 'SHADOW', title: '課題', text: '二つの天性のバランスを取ることが課題です。輝きと深みを統合したとき、あなたは本物のスターになります。' }
+  ]},
+  'セレブ': { theme: 'ちやほやされたい', sections: [
+    { tag: 'NATURE', title: '天性の姿', text: '生まれながらの総合運の強さを持つ存在。野心と社交性を備え、成功に向かって本能的に動ける天性です。' },
+    { tag: 'STRENGTH', title: '強み', text: 'メリット・デメリットを瞬時に判断する直感と、どんな場でも輝けるコミュニケーション力。成功を引き寄せる強さがあります。' },
+    { tag: 'SHADOW', title: '課題', text: '承認欲求が強すぎると、本当に大切なものを見失うことがあります。内なる充足感を育てることが、真の成功への鍵です。' }
+  ]},
+  'セレブMIX': { theme: '成功×調和', sections: [
+    { tag: 'NATURE', title: '天性の姿', text: 'セレブの成功運と、もう一つの天性が融合した存在。成功と、その先にある深いものを同時に求める稀有な天性です。' },
+    { tag: 'STRENGTH', title: '強み', text: '成功を引き寄せる力と、もう一つの天性が加わることで生まれる独自の魅力。多くの人を惹きつけます。' },
+    { tag: 'SHADOW', title: '課題', text: '二つの欲求の間で揺れることがあります。どちらも本物のあなたの欲求。統合することで、より大きな成功が開けます。' }
+  ]},
+  '単星': { theme: 'あなただけの星', sections: [
+    { tag: 'NATURE', title: '天性の姿', text: 'あなたは単独の星。誰にも染まらず、自分の軸をしっかりと持つ存在です。その独立性こそが最大の強みです。' },
+    { tag: 'STRENGTH', title: '強み', text: '自分の道を自分で決める力。他者に左右されない芯の強さが、あなたを唯一無二の存在にしています。' },
+    { tag: 'SHADOW', title: '課題', text: '孤立しやすい面があります。信頼できる仲間と繋がることで、あなたの星はさらに輝きを増します。' }
+  ]}
+};
+
+let currentName = '';
+let currentResult = '';
+
 async function doKantei(){
   const name = document.getElementById('name').value.trim();
   const birthday = document.getElementById('birthday').value;
   const comment = document.getElementById('comment').value;
-  const errEl = document.getElementById('error-msg');
+  const errEl = document.getElementById('error');
 
   errEl.textContent = '';
   if(!name){ errEl.textContent = 'お名前を入力してください'; return; }
   if(!birthday){ errEl.textContent = '生年月日を入力してください'; return; }
 
-  document.getElementById('loading').style.display = 'block';
-  document.getElementById('result-area').style.display = 'none';
+  document.getElementById('loading').classList.add('show');
 
   try {
     const res = await fetch('/kantei', {
@@ -536,54 +475,62 @@ async function doKantei(){
       body: JSON.stringify({name, birthday, comment})
     });
     const data = await res.json();
-
     if(data.error){ errEl.textContent = data.error; return; }
 
-    document.getElementById('result-character').textContent = data.result;
-    document.getElementById('result-person-label').textContent = `✦ ${name} ✦`;
-    document.getElementById('result-birthday-label').textContent = birthday.replace(/-/g,'. ');
-
-    document.getElementById('result-area').style.display = 'block';
-    document.getElementById('result-area').style.animation = 'none';
-    requestAnimationFrame(() => {
-      document.getElementById('result-area').style.animation = 'revealResult 1s ease forwards';
-    });
+    currentName = name;
+    currentResult = data.result;
+    showResult(name, birthday, data.result);
   } catch(e) {
     errEl.textContent = 'エラーが発生しました';
   } finally {
-    document.getElementById('loading').style.display = 'none';
+    document.getElementById('loading').classList.remove('show');
   }
 }
 
-// 履歴読み込み
-async function loadHistory(){
-  const pw = document.getElementById('pw-input').value;
-  const listEl = document.getElementById('history-list');
+function showResult(name, birthday, character){
+  document.getElementById('result-person').textContent = `✦ ${name} ✦`;
+  document.getElementById('result-character').textContent = character;
+  document.getElementById('result-birthday').textContent = birthday.replace(/-/g, '. ');
 
-  try {
-    const res = await fetch('/history?pw=' + encodeURIComponent(pw));
-    const data = await res.json();
-
-    if(data.error){ listEl.innerHTML = `<p class="error-msg">${data.error}</p>`; return; }
-
-    listEl.innerHTML = data.records.map(r => `
-      <div class="history-item">
-        <div class="history-meta">${r.created_at}｜${r.birthday}</div>
-        <div class="history-result">${r.name} — ${r.result}</div>
-        ${r.comment ? `<div style="font-size:0.7rem;color:rgba(245,240,232,0.4);margin-top:6px;letter-spacing:0.1em">${r.comment}</div>` : ''}
+  const d = DB[character] || DB['単星'];
+  const el = document.getElementById('result-sections');
+  el.innerHTML = `
+    <div style="text-align:center;margin:32px 0 24px;font-size:0.65rem;letter-spacing:0.35em;color:var(--gold);opacity:0.6;">${d.theme}</div>
+    ${d.sections.map(s => `
+      <div class="result-section">
+        <div class="section-tag">${s.tag}</div>
+        <div class="section-title">${s.title}</div>
+        <div class="section-text">${s.text}</div>
       </div>
-    `).join('') || '<p style="text-align:center;color:rgba(245,240,232,0.4);font-size:0.75rem;letter-spacing:0.2em">履歴がありません</p>';
-  } catch(e) {
-    listEl.innerHTML = '<p class="error-msg">エラーが発生しました</p>';
-  }
+    `).join('')}
+  `;
+
+  document.getElementById('more-input').value = '';
+  document.getElementById('send-done').style.display = 'none';
+  document.getElementById('page-top').classList.remove('active');
+  document.getElementById('page-result').classList.add('active');
+  window.scrollTo(0, 0);
 }
 
-// Enterキー対応
-document.addEventListener('keydown', e => {
-  if(e.key === 'Enter' && document.getElementById('tab-kantei').classList.contains('active')){
-    doKantei();
-  }
-});
+async function sendMore(){
+  const more = document.getElementById('more-input').value.trim();
+  if(!more) return;
+  try {
+    await fetch('/kantei', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name: currentName, birthday: '', comment: `【追加質問】${more}`, result: currentResult})
+    });
+  } catch(e){}
+  document.getElementById('send-done').style.display = 'block';
+  document.getElementById('more-input').value = '';
+}
+
+function goBack(){
+  document.getElementById('page-result').classList.remove('active');
+  document.getElementById('page-top').classList.add('active');
+  window.scrollTo(0, 0);
+}
 </script>
 </body>
 </html>
