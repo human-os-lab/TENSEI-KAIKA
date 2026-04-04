@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 import os
-import json
 from datetime import datetime
 from openpyxl import load_workbook
 import psycopg2
@@ -11,13 +10,16 @@ app = FastAPI()
 
 EXCEL_PATH = os.path.join(os.path.dirname(__file__), 'kantei_db.xlsx')
 PASSWORD = 'Lamat'
-DATABASE_URL = os.environ.get('DATABASE_URL')
 
-# =====================
-# DB接続
-# =====================
+def get_db_url():
+    url = os.environ.get('DATABASE_URL', '')
+    # postgresql:// を postgres:// に変換（psycopg2対応）
+    if url.startswith('postgres://'):
+        url = url.replace('postgres://', 'postgresql://', 1)
+    return url
+
 def get_conn():
-    return psycopg2.connect(DATABASE_URL)
+    return psycopg2.connect(get_db_url())
 
 def init_db():
     conn = get_conn()
@@ -55,9 +57,6 @@ def get_records():
 
 init_db()
 
-# =====================
-# データ読み込み
-# =====================
 def load_all_data():
     wb = load_workbook(EXCEL_PATH, read_only=True)
 
@@ -96,9 +95,6 @@ def load_all_data():
 
 meimei_db, hoshi_db, jumeri_db = load_all_data()
 
-# =====================
-# 計算
-# =====================
 def calc_kantei(birthday_str):
     try:
         from datetime import datetime as dt
@@ -128,9 +124,6 @@ def calc_kantei(birthday_str):
     tensei = jumeri if 'MIX' in str(jumeri) else hoshi
     return tensei, None
 
-# =====================
-# API
-# =====================
 @app.get('/', response_class=HTMLResponse)
 async def root():
     with open(os.path.join(os.path.dirname(__file__), 'index.html'), encoding='utf-8') as f:
