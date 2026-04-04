@@ -154,3 +154,20 @@ async def history(pw: str = ''):
         return JSONResponse({'error': 'パスワードが違います'})
     records = get_records()
     return JSONResponse({'records': records})
+
+@app.post('/more')
+async def more(request: Request):
+    body = await request.json()
+    name = body.get('name', '')
+    result = body.get('result', '')
+    comment = body.get('comment', '')
+    if comment:
+        conn = get_conn()
+        c = conn.cursor()
+        c.execute(
+            'INSERT INTO records (created_at, name, birthday, comment, result) VALUES (%s, %s, %s, %s, %s)',
+            (datetime.now().strftime('%Y-%m-%d %H:%M'), name, '追加質問', f'【追加質問】{comment}', result)
+        )
+        conn.commit()
+        conn.close()
+    return JSONResponse({'ok': True})
