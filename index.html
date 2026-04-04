@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天性鑑定 | 天性開花学</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Cinzel+Decorative:wght@400;700&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --deep-navy: #0a0a1a;
+    --royal-purple: #1a0a3a;
+    --violet: #2d1b69;
+    --gold: #c9a84c;
+    --gold-light: #f0d080;
+    --gold-bright: #ffd700;
+    --white: #f5f0e8;
+    --white-dim: rgba(245,240,232,0.7);
+    --glow: rgba(201,168,76,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--deep-navy);
+    color: var(--white);
+    font-family: 'Noto Serif JP', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* 背景の星 */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(45,27,105,0.6) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(26,10,58,0.8) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(10,10,26,1) 0%, transparent 100%);
+    z-index: 0;
+  }
+
+  /* 浮遊する数字 */
+  .floating-numbers {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .float-num {
+    position: absolute;
+    font-family: 'Cinzel Decorative', serif;
+    color: rgba(201,168,76,0.08);
+    font-size: clamp(1rem, 3vw, 2.5rem);
+    animation: floatUp linear infinite;
+    user-select: none;
+  }
+
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.5; }
+    100% { transform: translateY(-100px) rotate(20deg); opacity: 0; }
+  }
+
+  /* メインコンテナ */
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+  }
+
+  /* ヘッダー */
+  header {
+    text-align: center;
+    padding: 60px 0 40px;
+    position: relative;
+  }
+
+  .mandala {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    position: relative;
+    animation: spin 30s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .mandala svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 12px var(--gold));
+  }
+
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    letter-spacing: 0.15em;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-bright) 50%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    opacity: 0.7;
+    font-weight: 300;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 32px 0;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .divider span {
+    color: var(--gold);
+    font-size: 1rem;
+  }
+
+  /* フォームカード */
+  .card {
+    background: linear-gradient(135deg,
+      rgba(45,27,105,0.4) 0%,
+      rgba(26,10,58,0.6) 100%);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 2px;
+    padding: 40px;
+    backdrop-filter: blur(20px);
+    box-shadow:
+      0 0 40px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(201,168,76,0.1);
+    position: relative;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 2px;
+    background: linear-gradient(135deg, rgba(201,168,76,0.3), transparent, rgba(201,168,76,0.1));
+    z-index: -1;
+  }
+
+  /* コーナー装飾 */
+  .corner {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-color: var(--gold);
+    border-style: solid;
+    opacity: 0.6;
+  }
+  .corner.tl { top: 8px; left: 8px; border-width: 1px 0 0 1px; }
+  .corner.tr { top: 8px; right: 8px; border-width: 1px 1px 0 0; }
+  .corner.bl { bottom: 8px; left: 8px; border-width: 0 0 1px 1px; }
+  .corner.br { bottom: 8px; right: 8px; border-width: 0 1px 1px 0; }
+
+  .form-section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    color: var(--gold);
+    opacity: 0.6;
+    margin-bottom: 8px;
+    font-weight: 300;
+  }
+
+  .input-group {
+    margin-bottom: 28px;
+  }
+
+  label {
+    display: block;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    opacity: 0.8;
+    margin-bottom: 10px;
+    font-weight: 300;
+  }
+
+  input[type="text"],
+  input[type="date"],
+  textarea {
+    width: 100%;
+    background: rgba(10,10,26,0.6);
+    border: 1px solid rgba(201,168,76,0.25);
+    color: var(--white);
+    padding: 14px 18px;
+    font-family: 'Noto Serif JP', serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    border-radius: 1px;
+  }
+
+  input:focus, textarea:focus {
+    border-color: rgba(201,168,76,0.6);
+    box-shadow: 0 0 20px rgba(201,168,76,0.1);
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.7) sepia(1) saturate(2) hue-rotate(5deg);
+    opacity: 0.6;
+  }
+
+  textarea {
+    resize: none;
+    height: 80px;
+  }
+
+  /* ボタン */
+  .btn-kantei {
+    width: 100%;
+    padding: 18px;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold-light);
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s;
+    margin-top: 8px;
+  }
+
+  .btn-kantei::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .btn-kantei:hover::before { opacity: 0.15; }
+  .btn-kantei:hover {
+    box-shadow: 0 0 30px rgba(201,168,76,0.3), inset 0 0 30px rgba(201,168,76,0.05);
+    letter-spacing: 0.4em;
+  }
+
+  .btn-kantei span { position: relative; z-index: 1; }
+
+  /* 結果表示 */
+  .result-area {
+    display: none;
+    margin-top: 48px;
+    text-align: center;
+    animation: revealResult 1s ease forwards;
+  }
+
+  @keyframes revealResult {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-name {
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    opacity: 0.6;
+    margin-bottom: 16px;
+  }
+
+  .result-character {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-bright) 50%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.1em;
+    line-height: 1.2;
+    text-shadow: none;
+    filter: drop-shadow(0 0 20px rgba(201,168,76,0.4));
+    margin: 8px 0 24px;
+  }
+
+  .result-glow {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto 24px;
+  }
+
+  .result-person {
+    font-size: 0.75rem;
+    color: var(--white-dim);
+    letter-spacing: 0.2em;
+  }
+
+  /* タブ */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 32px;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+  }
+
+  .tab-btn {
+    padding: 12px 28px;
+    background: none;
+    border: none;
+    color: var(--white-dim);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s;
+  }
+
+  .tab-btn.active {
+    color: var(--gold);
+  }
+
+  .tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* 履歴 */
+  .pw-input-wrap { margin-bottom: 24px; }
+
+  .history-item {
+    border: 1px solid rgba(201,168,76,0.15);
+    padding: 20px 24px;
+    margin-bottom: 12px;
+    background: rgba(45,27,105,0.2);
+    transition: border-color 0.3s;
+  }
+
+  .history-item:hover { border-color: rgba(201,168,76,0.35); }
+
+  .history-meta {
+    font-size: 0.65rem;
+    color: var(--white-dim);
+    letter-spacing: 0.2em;
+    margin-bottom: 8px;
+  }
+
+  .history-result {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--gold);
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+  }
+
+  /* ローディング */
+  .loading {
+    display: none;
+    text-align: center;
+    padding: 40px;
+  }
+
+  .star-loader {
+    font-size: 2rem;
+    animation: pulse 1s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+
+  .error-msg {
+    color: #ff6b6b;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-align: center;
+    margin-top: 16px;
+  }
+
+  /* スクロールバー */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--deep-navy); }
+  ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 2px; }
+
+  @media (max-width: 480px) {
+    .card { padding: 28px 20px; }
+    .tab-btn { padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 浮遊する数字 -->
+<div class="floating-numbers" id="floatingNums"></div>
+
+<div class="container">
+
+  <!-- ヘッダー -->
+  <header>
+    <div class="mandala">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="48" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
+        <circle cx="50" cy="50" r="38" stroke="#c9a84c" stroke-width="0.5" opacity="0.5"/>
+        <circle cx="50" cy="50" r="28" stroke="#c9a84c" stroke-width="0.5" opacity="0.6"/>
+        <circle cx="50" cy="50" r="18" stroke="#c9a84c" stroke-width="0.5" opacity="0.8"/>
+        <g stroke="#c9a84c" stroke-width="0.5" opacity="0.6">
+          <line x1="50" y1="2" x2="50" y2="98"/>
+          <line x1="2" y1="50" x2="98" y2="50"/>
+          <line x1="15" y1="15" x2="85" y2="85"/>
+          <line x1="85" y1="15" x2="15" y2="85"/>
+        </g>
+        <g fill="#c9a84c" opacity="0.8">
+          <polygon points="50,5 52,10 50,9 48,10" />
+          <polygon points="50,95 52,90 50,91 48,90" />
+          <polygon points="5,50 10,52 9,50 10,48" />
+          <polygon points="95,50 90,52 91,50 90,48" />
+        </g>
+        <circle cx="50" cy="50" r="4" fill="#c9a84c" opacity="0.9"/>
+        <circle cx="50" cy="50" r="2" fill="#ffd700"/>
+      </svg>
+    </div>
+    <h1>天性鑑定</h1>
+    <p class="subtitle">✦ 天性開花学 ✦</p>
+  </header>
+
+  <!-- タブ -->
+
+
+  <!-- 鑑定タブ -->
+  <div id="tab-kantei">
+    <div class="card">
+      <div class="corner tl"></div>
+      <div class="corner tr"></div>
+      <div class="corner bl"></div>
+      <div class="corner br"></div>
+
+      <div class="input-group">
+        <label>お 名 前</label>
+        <input type="text" id="name" placeholder="山田 花子">
+      </div>
+
+      <div class="input-group">
+        <label>生 年 月 日</label>
+        <input type="date" id="birthday" value="1980-01-01" min="1924-01-01" max="2020-12-31">
+      </div>
+
+      <div class="input-group">
+        <label>コ メ ン ト</label>
+        <textarea id="comment" placeholder="相談内容、気になることなど"></textarea>
+      </div>
+
+      <button class="btn-kantei" onclick="doKantei()">
+        <span>✦ 天 性 を 解 き 明 か す ✦</span>
+      </button>
+
+      <div id="error-msg" class="error-msg"></div>
+    </div>
+
+    <!-- ローディング -->
+    <div class="loading" id="loading">
+      <div class="star-loader">✦</div>
+    </div>
+
+    <!-- 結果 -->
+    <div class="result-area" id="result-area">
+      <div class="divider"><span>✦</span></div>
+      <p class="result-name" id="result-person-label"></p>
+      <div class="result-character" id="result-character"></div>
+      <div class="result-glow"></div>
+      <p class="result-person" id="result-birthday-label"></p>
+    </div>
+  </div>
+
+
+</div>
+
+<script>
+// 浮遊する数字を生成
+const nums = '123456789';
+const floatContainer = document.getElementById('floatingNums');
+for(let i = 0; i < 25; i++){
+  const el = document.createElement('div');
+  el.className = 'float-num';
+  el.textContent = nums[Math.floor(Math.random()*nums.length)];
+  el.style.left = Math.random()*100 + 'vw';
+  el.style.animationDuration = (15 + Math.random()*25) + 's';
+  el.style.animationDelay = (-Math.random()*30) + 's';
+  el.style.fontSize = (0.8 + Math.random()*2.5) + 'rem';
+  floatContainer.appendChild(el);
+}
+
+// 鑑定実行
+async function doKantei(){
+  const name = document.getElementById('name').value.trim();
+  const birthday = document.getElementById('birthday').value;
+  const comment = document.getElementById('comment').value;
+  const errEl = document.getElementById('error-msg');
+
+  errEl.textContent = '';
+  if(!name){ errEl.textContent = 'お名前を入力してください'; return; }
+  if(!birthday){ errEl.textContent = '生年月日を入力してください'; return; }
+
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('result-area').style.display = 'none';
+
+  try {
+    const res = await fetch('/kantei', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name, birthday, comment})
+    });
+    const data = await res.json();
+
+    if(data.error){ errEl.textContent = data.error; return; }
+
+    document.getElementById('result-character').textContent = data.result;
+    document.getElementById('result-person-label').textContent = `✦ ${name} ✦`;
+    document.getElementById('result-birthday-label').textContent = birthday.replace(/-/g,'. ');
+
+    document.getElementById('result-area').style.display = 'block';
+    document.getElementById('result-area').style.animation = 'none';
+    requestAnimationFrame(() => {
+      document.getElementById('result-area').style.animation = 'revealResult 1s ease forwards';
+    });
+  } catch(e) {
+    errEl.textContent = 'エラーが発生しました';
+  } finally {
+    document.getElementById('loading').style.display = 'none';
+  }
+}
+
+// 履歴読み込み
+async function loadHistory(){
+  const pw = document.getElementById('pw-input').value;
+  const listEl = document.getElementById('history-list');
+
+  try {
+    const res = await fetch('/history?pw=' + encodeURIComponent(pw));
+    const data = await res.json();
+
+    if(data.error){ listEl.innerHTML = `<p class="error-msg">${data.error}</p>`; return; }
+
+    listEl.innerHTML = data.records.map(r => `
+      <div class="history-item">
+        <div class="history-meta">${r.created_at}｜${r.birthday}</div>
+        <div class="history-result">${r.name} — ${r.result}</div>
+        ${r.comment ? `<div style="font-size:0.7rem;color:rgba(245,240,232,0.4);margin-top:6px;letter-spacing:0.1em">${r.comment}</div>` : ''}
+      </div>
+    `).join('') || '<p style="text-align:center;color:rgba(245,240,232,0.4);font-size:0.75rem;letter-spacing:0.2em">履歴がありません</p>';
+  } catch(e) {
+    listEl.innerHTML = '<p class="error-msg">エラーが発生しました</p>';
+  }
+}
+
+// Enterキー対応
+document.addEventListener('keydown', e => {
+  if(e.key === 'Enter' && document.getElementById('tab-kantei').classList.contains('active')){
+    doKantei();
+  }
+});
+</script>
+</body>
+</html>
