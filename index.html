@@ -297,10 +297,7 @@
 
 <div class="floating-numbers" id="floatingNums"></div>
 
-<div class="loading-overlay" id="loading">
-  <div class="loading-star">✦</div>
-  <div class="loading-msg">宇宙の叡智とつながっています...</div>
-</div>
+
 
 <!-- TOP PAGE -->
 <div class="page active" id="page-top">
@@ -470,7 +467,10 @@ async function doKantei(){
   if(!name){ errEl.textContent = 'お名前を入力してください'; return; }
   if(!birthday){ errEl.textContent = '生年月日を入力してください'; return; }
 
-  document.getElementById('loading').classList.add('show');
+  const btn = document.querySelector('.btn-kantei');
+  btn.innerHTML = '<span>⟳ 宇宙の叡智とつながっています...</span>';
+  btn.disabled = true;
+  btn.style.color = 'var(--gold-bright)';
   startTime.val = Date.now();
 
   try {
@@ -480,18 +480,24 @@ async function doKantei(){
       body: JSON.stringify({name, birthday, comment})
     });
     const data = await res.json();
-    if(data.error){ errEl.textContent = data.error; document.getElementById('loading').classList.remove('show'); return; }
-
+    if(data.error){
+      errEl.textContent = data.error;
+      btn.innerHTML = '<span>✦ 天 性 を 解 き 明 か す ✦</span>';
+      btn.disabled = false; btn.style.color = '';
+      return;
+    }
     currentName = name; currentResult = data.result;
     const elapsed = Date.now() - startTime.val;
     const wait = Math.max(0, 3000 - elapsed);
     setTimeout(() => {
-      document.getElementById('loading').classList.remove('show');
+      btn.innerHTML = '<span>✦ 天 性 を 解 き 明 か す ✦</span>';
+      btn.disabled = false; btn.style.color = '';
       showResult(name, birthday, data.result);
     }, wait);
   } catch(e) {
     errEl.textContent = 'エラーが発生しました';
-    document.getElementById('loading').classList.remove('show');
+    btn.innerHTML = '<span>✦ 天 性 を 解 き 明 か す ✦</span>';
+    btn.disabled = false; btn.style.color = '';
   }
 }
 
@@ -515,9 +521,11 @@ function showResult(name, birthday, character){
 
   document.getElementById('more-input').value='';
   document.getElementById('send-done').style.display='none';
+  document.getElementById('page-top').style.display='none';
+  document.getElementById('page-result').style.display='block';
   document.getElementById('page-top').classList.remove('active');
   document.getElementById('page-result').classList.add('active');
-  window.scrollTo(0,0);
+  window.scrollTo({top:0, behavior:'instant'});
 }
 
 async function sendMore(){
@@ -533,9 +541,11 @@ async function sendMore(){
   document.getElementById('send-done').style.display='block';
   document.getElementById('more-input').value='';
   setTimeout(() => {
+    document.getElementById('page-result').style.display='none';
+    document.getElementById('page-top').style.display='block';
     document.getElementById('page-result').classList.remove('active');
     document.getElementById('page-top').classList.add('active');
-    window.scrollTo(0,0);
+    window.scrollTo({top:0, behavior:'instant'});
   }, 1500);
 }
 </script>
