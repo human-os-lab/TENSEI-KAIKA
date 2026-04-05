@@ -166,7 +166,7 @@ async def more(request: Request):
         c = conn.cursor()
         c.execute(
             'INSERT INTO records (created_at, name, birthday, comment, result) VALUES (%s, %s, %s, %s, %s)',
-            (datetime.now().strftime('%Y-%m-%d %H:%M'), name, '追加質問', f'【追加質問】{comment}', result)
+            (datetime.now().strftime('%Y-%m-%d %H:%M'), name, '', f'【追加質問】{comment}', result)
         )
         conn.commit()
         conn.close()
