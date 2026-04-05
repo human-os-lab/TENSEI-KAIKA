@@ -41,11 +41,13 @@ def save_record(name, birthday, comment, result):
     conn = get_conn()
     c = conn.cursor()
     c.execute(
-        'INSERT INTO records (created_at, name, birthday, comment, result) VALUES (%s, %s, %s, %s, %s)',
+        'INSERT INTO records (created_at, name, birthday, comment, result) VALUES (%s, %s, %s, %s, %s) RETURNING id',
         (datetime.now().strftime('%Y-%m-%d %H:%M'), name, birthday, comment, result)
     )
+    record_id = c.fetchone()[0]
     conn.commit()
     conn.close()
+    return record_id
 
 def get_records():
     conn = get_conn()
@@ -145,8 +147,8 @@ async def kantei(request: Request):
     if error:
         return JSONResponse({'error': error})
 
-    save_record(name, birthday, comment, result)
-    return JSONResponse({'result': result})
+    record_id = save_record(name, birthday, comment, result)
+    return JSONResponse({'result': result, 'record_id': record_id})
 
 @app.get('/history')
 async def history(pw: str = ''):
@@ -158,15 +160,14 @@ async def history(pw: str = ''):
 @app.post('/more')
 async def more(request: Request):
     body = await request.json()
-    name = body.get('name', '')
-    result = body.get('result', '')
+    record_id = body.get('record_id')
     comment = body.get('comment', '')
-    if comment:
+    if comment and record_id:
         conn = get_conn()
         c = conn.cursor()
         c.execute(
-            'INSERT INTO records (created_at, name, birthday, comment, result) VALUES (%s, %s, %s, %s, %s)',
-            (datetime.now().strftime('%Y-%m-%d %H:%M'), name, '', f'【追加質問】{comment}', result)
+            "UPDATE records SET comment = comment || ' 【追加質問】' || %s WHERE id = %s",
+            (comment, record_id)
         )
         conn.commit()
         conn.close()
