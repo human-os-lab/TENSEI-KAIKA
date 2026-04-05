@@ -454,7 +454,7 @@ const DB = {
   ]}
 };
 
-let currentName='', currentResult='';
+let currentName='', currentResult='', currentRecordId=null;
 const startTime = { val: 0 };
 
 async function doKantei(){
@@ -486,7 +486,7 @@ async function doKantei(){
       btn.disabled = false; btn.style.color = '';
       return;
     }
-    currentName = name; currentResult = data.result;
+    currentName = name; currentResult = data.result; currentRecordId = data.record_id; currentRecordId = data.record_id;
     const elapsed = Date.now() - startTime.val;
     const wait = Math.max(0, 3000 - elapsed);
     setTimeout(() => {
@@ -535,7 +535,7 @@ async function sendMore(){
     await fetch('/more', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({name:currentName, result:currentResult, comment:more})
+      body: JSON.stringify({record_id:currentRecordId, comment:more})
     });
   } catch(e){}
   document.getElementById('send-done').style.display='block';
