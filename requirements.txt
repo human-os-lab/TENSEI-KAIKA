@@ -2,3 +2,4 @@ fastapi
 uvicorn
 openpyxl
 psycopg2-binary
+anthropic

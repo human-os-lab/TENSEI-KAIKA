@@ -486,13 +486,13 @@ async function doKantei(){
       btn.disabled = false; btn.style.color = '';
       return;
     }
-    currentName = name; currentResult = data.result; currentRecordId = data.record_id; currentRecordId = data.record_id;
+    currentName = name; currentResult = data.result; currentRecordId = data.record_id;
     const elapsed = Date.now() - startTime.val;
     const wait = Math.max(0, 3000 - elapsed);
     setTimeout(() => {
       btn.innerHTML = '<span>✦ 天 性 を 解 き 明 か す ✦</span>';
       btn.disabled = false; btn.style.color = '';
-      showResult(name, birthday, data.result);
+      showResult(name, birthday, data.result, data.kantei_text);
     }, wait);
   } catch(e) {
     errEl.textContent = 'エラーが発生しました';
@@ -501,12 +501,12 @@ async function doKantei(){
   }
 }
 
-function showResult(name, birthday, character){
+function showResult(name, birthday, character, kanteiText){
   document.getElementById('result-person').textContent = `✦ ${name} ✦`;
   document.getElementById('result-character').textContent = character;
   document.getElementById('result-birthday').textContent = birthday.replace(/-/g,'. ');
 
-  const d = DB[character] || DB['単星'];
+  const d = (kanteiText && kanteiText.sections) ? kanteiText : (DB[character] || DB['単星']);
   const el = document.getElementById('result-sections');
   el.innerHTML = `
     <div style="text-align:center;margin:32px 0 20px;font-size:0.65rem;letter-spacing:0.4em;color:var(--gold);opacity:0.6;">${d.theme}</div>

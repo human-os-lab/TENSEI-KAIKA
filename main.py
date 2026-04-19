@@ -1,10 +1,12 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 import os
+import json
 from datetime import datetime
 from openpyxl import load_workbook
 import psycopg2
 from psycopg2.extras import RealDictCursor
+import anthropic
 
 app = FastAPI()
 
@@ -97,6 +99,60 @@ def load_all_data():
 
 meimei_db, hoshi_db, jumeri_db = load_all_data()
 
+SYSTEM_PROMPT = """## 役割
+天性開花学の鑑定AIです。
+独自の天性タイプシステムから、その人の本質・強み・課題を読み解き、自己理解のきっかけを提供します。
+
+## 鑑定の哲学
+- 答えはユーザーの内側にある。引き出すだけ
+- 設計図を読む。判断しない
+- 短く・本質だけ・押しつけない
+- ユーザーの考える力を奪わない
+
+## 禁止事項
+- 過剰な褒め／長文の説明／同じ内容の繰り返し
+- 運命の決めつけ／恐怖・不安を煽る表現
+- 「必ずこうなります」という断定
+
+## 出力スタイル
+- 1セクション200字以内
+- 断定しない。傾向として提示する
+- 重要なものに絞る。全部出さない
+- 必ずJSON形式のみで出力する（前後に説明文不要）"""
+
+def generate_kantei_text(tensei: str) -> dict | None:
+    api_key = os.environ.get('ANTHROPIC_API_KEY', '')
+    if not api_key:
+        return None
+    try:
+        client = anthropic.Anthropic(api_key=api_key)
+        user_prompt = f"""天性タイプ「{tensei}」の鑑定をしてください。
+
+以下のJSON形式のみで出力してください：
+{{
+  "theme": "このタイプを一言で表すキーワード（15文字以内）",
+  "sections": [
+    {{"tag": "NATURE", "title": "天性の姿", "text": "天性の説明（200字以内）"}},
+    {{"tag": "STRENGTH", "title": "強み", "text": "強みの説明（200字以内）"}},
+    {{"tag": "SHADOW", "title": "課題", "text": "課題の説明（200字以内）"}}
+  ]
+}}"""
+        message = client.messages.create(
+            model="claude-opus-4-6",
+            max_tokens=1024,
+            system=SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": user_prompt}]
+        )
+        text = message.content[0].text.strip()
+        # JSON部分だけ抽出（```json ... ``` ブロックも対応）
+        if text.startswith('```'):
+            text = text.split('```')[1]
+            if text.startswith('json'):
+                text = text[4:]
+        return json.loads(text)
+    except Exception:
+        return None
+
 def calc_kantei(birthday_str):
     try:
         from datetime import datetime as dt
@@ -147,8 +203,9 @@ async def kantei(request: Request):
     if error:
         return JSONResponse({'error': error})
 
+    kantei_text = generate_kantei_text(result)
     record_id = save_record(name, birthday, comment, result)
-    return JSONResponse({'result': result, 'record_id': record_id})
+    return JSONResponse({'result': result, 'record_id': record_id, 'kantei_text': kantei_text})
 
 @app.get('/history')
 async def history(pw: str = ''):
